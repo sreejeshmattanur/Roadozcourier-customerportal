@@ -8,8 +8,8 @@ import Franchise from "./pages/Franchise";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import Skeleton from "./components/Loader/Skeleton";
-import TrackOrderPage from "./pages/TrackOrderPage";
-import TrackOrderView from "./pages/TrackOrderView";
+// import TrackOrderPage from "./pages/TrackOrderPage";
+// import TrackOrderView from "./pages/TrackOrderView";
 import MaintenanceWarning from "./components/MaintenanceWarning";
 import { motion } from "framer-motion";
 
@@ -61,8 +61,8 @@ export default function App() {
             <Route path="/franchise" element={<PageWrapper><Franchise /></PageWrapper>} />
             <Route path="/about" element={<PageWrapper><AboutPage /></PageWrapper>} />
             <Route path="/contact" element={<PageWrapper><ContactPage /></PageWrapper>} />
-            <Route path="/track-order" element={<PageWrapper><TrackOrderPage /></PageWrapper>} />
-            <Route path="/track-order/:orderId" element={<TrackOrderView />} />
+            {/* <Route path="/track-order" element={<PageWrapper><TrackOrderPage /></PageWrapper>} />
+            <Route path="/track-order/:orderId" element={<TrackOrderView />} /> */}
           </Routes>
         </main>
         
