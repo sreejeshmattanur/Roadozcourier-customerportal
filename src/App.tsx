@@ -8,30 +8,27 @@ import Franchise from "./pages/Franchise";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import Skeleton from "./components/Loader/Skeleton";
+import TrackOrderPage from "./pages/TrackOrderPage";
+import TrackOrderView from "./pages/TrackOrderView";
+import MaintenanceWarning from "./components/MaintenanceWarning";
 import { motion } from "framer-motion";
 
-// Scroll to top on route change
 const ScrollToTop = () => {
   const { pathname } = useLocation();
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
-
   return null;
 };
 
 const PageWrapper = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
-
   useEffect(() => {
     setIsLoading(true);
-
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 500); // smoother than 1000ms
-
+    }, 500);
     return () => clearTimeout(timer);
   }, [location.pathname]);
 
@@ -53,6 +50,8 @@ export default function App() {
       <ScrollToTop />
 
       <div className="min-h-screen flex flex-col font-sans">
+        <MaintenanceWarning />
+        
         <Headers />
 
         <main className="flex-grow">
@@ -62,9 +61,11 @@ export default function App() {
             <Route path="/franchise" element={<PageWrapper><Franchise /></PageWrapper>} />
             <Route path="/about" element={<PageWrapper><AboutPage /></PageWrapper>} />
             <Route path="/contact" element={<PageWrapper><ContactPage /></PageWrapper>} />
+            <Route path="/track-order" element={<PageWrapper><TrackOrderPage /></PageWrapper>} />
+            <Route path="/track-order/:orderId" element={<TrackOrderView />} />
           </Routes>
         </main>
-
+        
         <Footer />
       </div>
     </Router>
