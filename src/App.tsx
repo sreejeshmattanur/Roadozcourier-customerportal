@@ -10,7 +10,6 @@ import ContactPage from "./pages/ContactPage";
 import Skeleton from "./components/Loader/Skeleton";
 // import TrackOrderPage from "./pages/TrackOrderPage";
 // import TrackOrderView from "./pages/TrackOrderView";
-import MaintenanceWarning from "./components/MaintenanceWarning";
 import { motion } from "framer-motion";
 
 const ScrollToTop = () => {
@@ -50,7 +49,7 @@ export default function App() {
       <ScrollToTop />
 
       <div className="min-h-screen flex flex-col font-sans">
-        <MaintenanceWarning />
+        {/* MaintenanceWarning removed from here */}
         
         <Headers />
 
