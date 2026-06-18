@@ -4,7 +4,7 @@ A modern customer portal for a courier and logistics service, built to streamlin
 
 📌 Overview
 
-The Roadoz Courier Customer Portal is a web-based application designed to provide customers with an easy and efficient way to manage their deliveries. This project is developed as a portfolio/demo system showcasing full-stack development and logistics workflow handling.
+The Roadoz Courier Customer Portal is a web-based application designed to provide customers with an easy and efficient way to manage their deliveries. This project is developed as a portfolio/demo system showcasing full-stack development and logistics workflow handling
 
 ✨ Features
 📦 Shipment Booking – Create and schedule deliveries بسهولة
