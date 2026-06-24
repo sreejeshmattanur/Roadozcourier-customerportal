@@ -8,9 +8,13 @@ import Franchise from "./pages/Franchise";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import Skeleton from "./components/Loader/Skeleton";
+import ChatWidget from "./components/ChatWidget"; // Import here
+
 // import TrackOrderPage from "./pages/TrackOrderPage";
 // import TrackOrderView from "./pages/TrackOrderView";
 import { motion } from "framer-motion";
+import { Toaster } from 'react-hot-toast';
+
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -45,7 +49,10 @@ const PageWrapper = ({ children }) => {
 
 export default function App() {
   return (
+    
     <Router>
+            <Toaster position="top-center" reverseOrder={false} />
+
       <ScrollToTop />
 
       <div className="min-h-screen flex flex-col font-sans">
@@ -64,7 +71,8 @@ export default function App() {
             <Route path="/track-order/:orderId" element={<TrackOrderView />} /> */}
           </Routes>
         </main>
-        
+        <ChatWidget />
+
         <Footer />
       </div>
     </Router>
