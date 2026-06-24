@@ -1,8 +1,48 @@
-import React from 'react';
-import { MapPin, Phone, MessageSquare, ArrowRight } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { MapPin, Phone, MessageSquare, ArrowRight, Loader2 } from 'lucide-react';
+import emailjs from '@emailjs/browser';
+import toast from 'react-hot-toast';
 
 const ContactFormSection = () => {
-  const inputStyle = "w-full bg-[#E5E7EB] border-none rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#E9D16D] outline-none";
+  const form = useRef();
+  const [loading, setLoading] = useState(false);
+
+  const inputStyle = "w-full bg-[#E5E7EB] border-none rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#E9D16D] outline-none transition-all";
+
+  const handleSendEmail = (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    // Replace these with your actual IDs from EmailJS Dashboard
+    const SERVICE_ID = "YOUR_SERVICE_ID";
+    const TEMPLATE_ID = "YOUR_TEMPLATE_ID";
+    const PUBLIC_KEY = "YOUR_PUBLIC_KEY";
+
+    emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, form.current, PUBLIC_KEY)
+      .then((result) => {
+        toast.success("Message sent successfully! Our team will get back to you shortly.", {
+          duration: 5000,
+          style: {
+            border: '1px solid #dec06c',
+            padding: '16px',
+            color: '#3e4450',
+            fontWeight: 'bold',
+            background: '#fff',
+          },
+          iconTheme: {
+            primary: '#dec06c',
+            secondary: '#fff',
+          },
+        });
+        form.current.reset();
+      }, (error) => {
+        toast.error("Failed to send message. Please try again or contact us via WhatsApp.");
+        console.error("EmailJS Error:", error.text);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   return (
     <section className="py-20 px-6 md:px-20 max-w-7xl mx-auto">
@@ -50,7 +90,7 @@ const ContactFormSection = () => {
           <div className="pt-6 border-t border-gray-100">
             <h4 className="font-bold text-gray-900 mb-2">Franchise Inquiries</h4>
             <p className="text-gray-500 text-sm mb-4">Join our growing network of professional couriers.</p>
-            <a href="#" className="text-[#B29E53] font-bold flex items-center gap-2 hover:underline">
+            <a href="/franchise" className="text-[#B29E53] font-bold flex items-center gap-2 hover:underline">
               Learn More <ArrowRight size={16}/>
             </a>
           </div>
@@ -58,35 +98,64 @@ const ContactFormSection = () => {
 
         {/* Right Column: Form */}
         <div className="lg:w-1/2">
-          <form className="space-y-6">
+          <form ref={form} onSubmit={handleSendEmail} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-xs font-bold mb-2">Name</label>
-                <input type="text" placeholder="Name" className={inputStyle} />
+                <input 
+                  type="text" 
+                  name="user_name" 
+                  required 
+                  placeholder="Your Name" 
+                  className={inputStyle} 
+                />
               </div>
               <div>
                 <label className="block text-xs font-bold mb-2">Email id</label>
-                <input type="email" placeholder="Email id" className={inputStyle} />
+                <input 
+                  type="email" 
+                  name="user_email" 
+                  required 
+                  placeholder="email@example.com" 
+                  className={inputStyle} 
+                />
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-bold mb-2">Subject</label>
-              <select className={inputStyle}>
-                <option>General Inquiry</option>
-                <option>Support</option>
-                <option>Franchise</option>
+              <select name="subject" className={inputStyle}>
+                <option value="General Inquiry">General Inquiry</option>
+                <option value="Support">Support</option>
+                <option value="Franchise">Franchise</option>
               </select>
             </div>
 
             <div>
               <label className="block text-xs font-bold mb-2 uppercase text-gray-400">Message</label>
-              <textarea rows="6" placeholder="How can we help you?" className={inputStyle}></textarea>
+              <textarea 
+                name="message" 
+                required 
+                rows="6" 
+                placeholder="How can we help you?" 
+                className={inputStyle}
+              ></textarea>
             </div>
 
             <div className="flex justify-end">
-              <button className="bg-[#E9D16D] hover:bg-[#d4bd5a] text-gray-900 font-bold py-3 px-10 rounded-full shadow-md transition-all text-sm">
-                Send message
+              <button 
+                type="submit"
+                disabled={loading}
+                className="bg-[#E9D16D] hover:bg-[#d4bd5a] text-gray-900 font-bold py-3 px-10 rounded-full shadow-md transition-all text-sm flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="animate-spin" size={16} />
+                    Sending...
+                  </>
+                ) : (
+                  "Send message"
+                )}
               </button>
             </div>
           </form>
@@ -96,4 +165,4 @@ const ContactFormSection = () => {
   );
 };
 
-export default ContactFormSection;
+export default ContactFormSection;  

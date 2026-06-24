@@ -7,17 +7,25 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
 
   return {
-    base: "/", // ✅ ADD THIS LINE
-
+    base: "/", 
     plugins: [react(), tailwindcss()],
-
     define: {
       'process.env.APP_URL': JSON.stringify(env.APP_URL),
     },
-
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
+      },
+    },
+    // ✅ PROXY CONFIGURATION
+    server: {
+      proxy: {
+        '/api-proxy': {
+          target: 'https://api.roadozcourier.com',
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/api-proxy/, ''),
+        },
       },
     },
   };
