@@ -23,18 +23,24 @@ const chatSlice = createSlice({
   reducers: {
     setActiveAgent: (state, action) => {
       state.activeAgent = action.payload;
-      state.messages = []; // Clear current messages to show history of new agent
+      state.messages = []; 
     },
     addMessage: (state, action) => {
-      // Logic: Only add message if it belongs to the current conversation
       const msg = action.payload;
       const currentAgentId = state.activeAgent?.id;
       
-      // Show message if I sent it to active agent OR active agent sent it to me
-      if (msg.sender_id === currentAgentId || msg.receiver_id === currentAgentId) {
-        // Prevent duplicate IDs if backend sends 'sent' event back
-        const exists = state.messages.find(m => m.id === msg.id);
-        if (!exists) state.messages.push(msg);
+      // Ensure the message belongs to the currently active conversation
+      const isRelevant = (msg.sender_id === currentAgentId || msg.receiver_id === currentAgentId);
+      
+      if (isRelevant) {
+        // Prevent duplicate messages (IDs check)
+        const exists = state.messages.find(m => m.id === msg.id && msg.id !== undefined);
+        if (!exists) {
+          state.messages.push({
+            ...msg,
+            created_at: msg.created_at || new Date().toISOString()
+          });
+        }
       }
     },
     setConnectionStatus: (state, action) => {
@@ -45,12 +51,13 @@ const chatSlice = createSlice({
     builder
       .addCase(fetchAgents.fulfilled, (state, action) => {
         state.agents = action.payload;
-        if (action.payload.length > 0 && !state.activeAgent) {
-          state.activeAgent = action.payload[0];
-        }
+      })
+      .addCase(fetchChatHistory.pending, (state) => {
+        state.loading = true;
       })
       .addCase(fetchChatHistory.fulfilled, (state, action) => {
         state.messages = action.payload;
+        state.loading = false;
       });
   }
 });

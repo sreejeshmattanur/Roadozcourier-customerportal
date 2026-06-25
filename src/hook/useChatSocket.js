@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Cookies from 'js-cookie';
 import { addMessage, setConnectionStatus } from '../store/chatSlice';
+import { getChatWSUrl } from '../Service/apiCalls';
 
 export const useChatSocket = () => {
   const socketRef = useRef(null);
@@ -9,24 +9,37 @@ export const useChatSocket = () => {
   const { activeAgent } = useSelector((state) => state.chat);
 
   useEffect(() => {
-    const token = Cookies.get("access_token")?.replace(/['"]+/g, '').trim();
-    if (!token) return;
+    const connect = () => {
+      const wsUrl = getChatWSUrl();
+      const socket = new WebSocket(wsUrl);
+      socketRef.current = socket;
 
-    // Use the WS URL from your requirement
-    const wsUrl = `ws://127.0.0.1:8000/api/v1/ws/admin/chat?token=${token}`;
-    socketRef.current = new WebSocket(wsUrl);
+      socket.onopen = () => {
+        dispatch(setConnectionStatus(true));
+        console.log("WebSocket Connection Established");
+      };
 
-    socketRef.current.onopen = () => dispatch(setConnectionStatus(true));
-    socketRef.current.onclose = () => dispatch(setConnectionStatus(false));
-    
-    socketRef.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      // Backend returns "event": "sent" or "event": "message"
-      dispatch(addMessage(data));
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        dispatch(addMessage(data));
+      };
+
+      socket.onclose = () => {
+        dispatch(setConnectionStatus(false));
+        // Try to reconnect after 5 seconds if the chat is still open
+        setTimeout(connect, 5000);
+      };
+
+      socket.onerror = (err) => {
+        console.error("WebSocket Error:", err);
+        socket.close();
+      };
     };
 
+    connect();
+
     return () => {
-      socketRef.current?.close();
+      if (socketRef.current) socketRef.current.close();
     };
   }, [dispatch]);
 
@@ -34,12 +47,10 @@ export const useChatSocket = () => {
     if (socketRef.current?.readyState === WebSocket.OPEN && activeAgent) {
       const payload = {
         receiver_id: activeAgent.id,
-        receiver_type: activeAgent.user_type, // "user" based on your JSON
+        receiver_type: activeAgent.user_type || "user", 
         message: messageText
       };
       socketRef.current.send(JSON.stringify(payload));
-      
-      // Optimistically add to UI (optional, usually handled by 'onmessage' response)
     }
   };
 
