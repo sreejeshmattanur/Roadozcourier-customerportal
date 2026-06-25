@@ -24,6 +24,25 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+export const getChatWSUrl = () => {
+  let wsBase = BASE_URL.replace(/^http/, "ws");
+  
+  wsBase = wsBase.replace(/\/+$/, "");
+  
+  const endpoint = ENDPOINTS.CHAT_WS.replace(/^\/+/, "");
+  
+  const token = Cookies.get("access_token")?.replace(/['"]+/g, '').trim();
+  
+  const finalUrl = `${wsBase}/${endpoint}?token=${token}`;
+  
+  return finalUrl;
+};
+
+export const fetchSupportAgentsApi = () => API.get(ENDPOINTS.GET_SUPPORT_AGENTS);
+export const fetchChatHistoryApi = (receiverId) => 
+  API.get(`${ENDPOINTS.GET_CHAT_MESSAGES}?receiver_id=${receiverId}`);
+
+
 // Auth APIs
 export const sendOtpByPhoneApi = (phone) => API.post(ENDPOINTS.SEND_OTP_PHONE, { phone });
 export const verifyOtpByPhoneApi = (data) => API.post(ENDPOINTS.VERIFY_OTP_PHONE, data);
@@ -45,8 +64,6 @@ export const createFranchiseApi = (formData) => {
         },
     });
 };
-export const fetchSupportAgentsApi = () => API.get(ENDPOINTS.GET_SUPPORT_AGENTS);
-export const fetchChatHistoryApi = (receiverId) => 
-  API.get(`${ENDPOINTS.GET_CHAT_MESSAGES}?receiver_id=${receiverId}`);
+
 
 export default API;
